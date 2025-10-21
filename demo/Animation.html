@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        // 创建场景、相机和渲染器
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const loader = new GLTFLoader();
+        loader.load('yourModel.glb', (gltf) => {
+            const model = gltf.scene;
+            scene.add(model);
+
+            // 创建动画混合器
+            const mixer = new THREE.AnimationMixer(model);
+            // 获取动画剪辑，这里假设模型只有一个动画剪辑
+            const clip = gltf.animations[0];
+            const action = mixer.clipAction(clip);
+
+            // 监听动画结束事件
+            action.addEventListener('finished', () => {
+                console.log('动画播放完成');
+                // 在这里可以添加动画播放完成后的操作，比如隐藏模型、触发其他动画等
+            });
+
+            action.play();
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+
+</html>
